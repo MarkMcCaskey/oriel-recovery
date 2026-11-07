@@ -4,3 +4,82 @@
 .command-form label{display:block}.tabs{position:sticky;top:0;z-index:10;background:var(--bg)}button{touch-action:manipulation}
 @media(max-width:760px){input,textarea,.command-form input,.file-controls input,.bench-load input{font-size:16px}.command-form input{line-height:1.5}.command-form button,.file-controls button,.bench-load button,.bench-actions button,.editor-actions button,.session-actions button,.time-buttons button,.full{min-height:44px}.tab{min-height:46px}#editor{font-size:16px}.command-form label{font-size:11px}}
 @media(max-width:420px){.rail{grid-template-columns:1fr}.status-panel{grid-row:auto}.horizon svg{height:80px}.session-actions{flex-direction:row}}
+
+/* Reflow when folded, rotated, or resized; no device model assumptions. */
+:root{--gutter:40px;--edge-left:max(var(--gutter),env(safe-area-inset-left,0px));--edge-right:max(var(--gutter),env(safe-area-inset-right,0px))}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.masthead,.campaign,.tabs,main,footer{margin-left:var(--edge-left);margin-right:var(--edge-right)}
+.tabs{top:env(safe-area-inset-top,0px)}
+main{scroll-margin-top:80px}
+.view>*{min-width:0}
+.panel{container-type:inline-size}
+.campaign{gap:24px}.campaign>div:first-child{min-width:0}.clock{flex:none}
+.tab{flex-shrink:0}.tabs{gap:20px;overflow-x:auto;scrollbar-width:thin}
+.panel-head>div{display:flex}.panel-head>span{min-width:0;overflow-wrap:anywhere}
+.terminal{min-height:0}.terminal-panel{min-height:420px;height:calc(100dvh - 280px);max-height:850px}
+.terminal-foot{align-items:center;flex-wrap:wrap}.terminal-foot>span{text-align:right;line-height:1.6}
+.history-controls{display:flex;align-items:center;gap:6px}.history-controls button{min-width:44px;min-height:44px;padding:6px;font-size:18px}.history-controls span{display:inline!important}
+.editor-actions{flex-wrap:wrap}.bench-panel pre{overflow-wrap:anywhere}
+.busy{max-width:calc(100% - 32px);bottom:max(16px,env(safe-area-inset-bottom,0px))}
+@media(max-width:1100px){:root{--gutter:24px}}
+@media(max-width:900px){
+  :root{--gutter:18px}
+  .mast-sub{display:none}.reference{display:none}
+  #view-console,#view-workbench,#view-archive{grid-template-columns:minmax(0,1fr)}
+  .rail{display:grid;grid-template-columns:1fr 1fr;gap:12px}.status-panel{grid-row:span 2}
+  .terminal-panel{height:clamp(360px,65dvh,650px);min-height:360px}
+  .archive-nav .panel-head,.archive-caption{display:none}
+  #archive-files{display:flex;overflow-x:auto}.archive-nav .file-row{width:auto;flex:none;white-space:nowrap;min-height:44px}
+  .archive-nav small{display:none}.document-panel pre{max-height:none;min-height:300px}
+  .tabs{gap:18px}.tab span{margin-left:4px}
+}
+@media(max-width:420px){
+  .campaign{align-items:start;flex-direction:column;gap:16px;margin-top:18px;margin-bottom:16px}
+  .campaign h1{font-size:20px}.clock{display:flex;align-items:center;gap:9px;width:100%;text-align:left}
+  .clock strong{font-size:17px}.clock small{margin-left:auto;font-size:7px}.clock span{max-width:50px;line-height:1.5}
+  .tabs{gap:10px;justify-content:space-between}.tab{flex:1;padding:12px 0;font-size:0;min-width:0}.tab span{margin:0;font-size:11px}
+  .rail{grid-template-columns:minmax(0,1fr)}.status-panel{grid-row:auto}
+}
+@media(pointer:coarse),(max-width:900px){
+  button,summary{min-height:44px}summary{display:flex;align-items:center}
+  input,textarea,.command-form input,.file-controls input,.bench-load input,#editor{font-size:16px}
+  .quiet{min-width:44px}.file-controls button,.bench-load button{height:auto;min-height:44px}
+  .command-form input{line-height:1.5;min-height:44px}.command-form button{min-width:44px}
+}
+@container(max-width:440px){
+  .file-controls{flex-wrap:wrap;gap:10px;padding:12px}
+  .file-controls label:first-child{flex-basis:100%;min-width:0}
+  .file-controls .base-label{flex:1;min-width:90px}
+  .file-controls button{padding:10px;flex:none}
+  .panel-head{padding:0 10px;gap:5px;font-size:9px;letter-spacing:.5px}
+  .panel-head>span:last-child:not(:first-child){font-size:8px}
+  .quiet{font-size:9px;padding:6px}
+  .terminal{padding:15px;font-size:11px}
+  .command-form{padding:8px 10px;gap:7px}.command-form label{font-size:10px}
+  .terminal-foot{padding:7px 10px;font-size:8px}
+  .bench-load{flex-wrap:wrap;margin:12px}.bench-load label:first-child{flex-basis:100%}
+  .bench-load label{flex:1}.bench-load button{min-width:65px}
+  .bench-panel pre{margin:12px;padding:10px}
+  .document-panel pre{padding:12px;font-size:11px}
+}
+/* Keep separate panels clear of a vertical hinge when segments are exposed.
+   Standard: https://www.w3.org/TR/mediaqueries-5/#mf-horizontal-viewport-segments */
+@media(horizontal-viewport-segments:2){
+  body{max-width:none;margin:0}
+  .masthead,.tabs,footer{width:calc(env(viewport-segment-width 0 0) - var(--edge-left) - var(--gutter));margin-right:0}
+  .mast-sub,.local,.reference{display:none}
+  .campaign,.view.active{display:grid;grid-template-columns:minmax(0,calc(env(viewport-segment-width 0 0) - var(--edge-left) - var(--gutter))) minmax(0,calc(env(viewport-segment-width 1 0) - var(--edge-right) - var(--gutter)));column-gap:calc(env(viewport-segment-left 1 0) - env(viewport-segment-right 0 0) + 2 * var(--gutter))}
+  #view-console,#view-workbench,#view-archive{grid-template-columns:minmax(0,calc(env(viewport-segment-width 0 0) - var(--edge-left) - var(--gutter))) minmax(0,calc(env(viewport-segment-width 1 0) - var(--edge-right) - var(--gutter)))}
+  .campaign{align-items:center}.clock{display:grid;justify-self:end;text-align:right;width:auto}
+  .tabs{gap:10px}.tab{flex:1;font-size:0}.tab span{font-size:11px;margin:0}
+  .rail{display:flex}.session-actions{flex-wrap:wrap}.terminal-panel{height:65dvh;min-height:360px}
+  #archive-files{display:block}.archive-nav .file-row{width:100%;white-space:normal;overflow-wrap:anywhere}
+  footer{flex-wrap:wrap}.busy{left:calc(env(viewport-segment-width 0 0) / 2);max-width:calc(env(viewport-segment-width 0 0) - 32px)}
+}
+/* A horizontal hinge gets one scrollable upper pane, keeping controls visible. */
+@media(vertical-viewport-segments:2){
+  html{height:env(viewport-segment-height 0 0);overflow:hidden}
+  body{height:100%;overflow-y:auto;max-width:none;margin:0}
+  .terminal-panel{height:calc(env(viewport-segment-height 0 0) - 70px);min-height:280px}
+  .busy{bottom:calc(100dvh - env(viewport-segment-height 0 0) + 12px)}
+}

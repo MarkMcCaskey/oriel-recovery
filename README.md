@@ -7,6 +7,9 @@ terminal or browser. Investigate a fictional university CubeSat through a
 bandwidth-limited ground station, incomplete engineering archives, and a
 local debugging bench. Develop and execute real code on the simulated CPU.
 
+Inspired by PistonMiner's [BEESAT-1 recovery presentation at 38C3](https://media.ccc.de/v/38c3-hacking-yourself-a-satellite-recovering-beesat-1).
+ORIEL-1 is the fictional spacecraft in this game, with its own mission and incident.
+
 ## Launch the CLI
 
 With Rust installed:
@@ -31,6 +34,15 @@ python3 -m http.server 8080 --directory dist
 Open **http://localhost:8080**. The browser player runs the same Rust core
 through WebAssembly. After its first complete load, it can reload offline
 on localhost or HTTPS. Export sessions to keep backups or transfer to CLI.
+
+On phones, use the console's history arrows to recall commands and the
+editor's Indent button to insert spaces. Folding or rotating the display
+preserves your workspace. Browsers that expose viewport segments get
+separate panels around a vertical hinge, or a scrollable upper pane above
+a horizontal hinge. Other browsers use the standard responsive layout.
+Layouts have been checked with resized viewports and simulated hinge
+geometry; physical foldable devices and their software keyboards still
+need device testing.
 
 ## Mission briefing
 
@@ -61,5 +73,4 @@ and [build/model notes](docs/model.md) are spoiler-free. The model notes
 explain the deliberate simplifications and the boundary between player and
 developer material. Public tests contain no recovery walkthrough.
 
-Inspired by PistonMiner's [BEESAT-1 recovery presentation at 38C3](https://media.ccc.de/v/38c3-hacking-yourself-a-satellite-recovering-beesat-1).
 All spacecraft, protocols and radio links here are fictional.
