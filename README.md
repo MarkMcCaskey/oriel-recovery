@@ -1,5 +1,7 @@
 # ORIEL-1 · Recovery station
 
+[Play in your browser](https://markmccaskey.github.io/oriel-recovery/) · Works on phones and desktops.
+
 A single-player satellite recovery engineering simulator, offline in your
 terminal or browser. Investigate a fictional university CubeSat through a
 bandwidth-limited ground station, incomplete engineering archives, and a
@@ -52,7 +54,7 @@ python3 scripts/audit.py
 
 The standalone native player is `dist/player/ground`; the static website is
 `dist/`. Neither requires a cloud service. The included GitHub Pages workflow
-can publish the browser build when Pages is enabled for GitHub Actions.
+publishes `main` when Pages is enabled for GitHub Actions.
 
 The [console reference](docs/commands.md), [engineering archive](archive/manifest.txt)
 and [build/model notes](docs/model.md) are spoiler-free. The model notes
