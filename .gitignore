@@ -1,0 +1,8 @@
+/target/
+/.private/
+/.local/
+/saves/
+/dist/
+*.session
+*.sav
+.DS_Store

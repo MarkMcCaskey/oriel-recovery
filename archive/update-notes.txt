@@ -1,0 +1,29 @@
+ORIEL-1 / BOOT AND UPDATE NOTES / archive compilation
+
+Boot ROM: vectors at 0000 and 0008 transfer to linked application code.
+There is no authenticated ROM monitor, safe image selector, or recovery
+partition. The ROM is immutable. It cannot repair a damaged application.
+
+FSW 1.1 planning, 2013-11:
+Allocate begin/block/commit telecommands. Candidate images expected to be
+staged through the experiment workspace and validated before programming.
+Implementation should preserve link service and watchdog handling.
+
+FSW 1.2 design review, 2014-02:
+A NOR flash controller driver exists on the engineering model. Application
+code should execute outside any region being erased. Validate bus behavior
+and restore all bytes in an erased sector, including unrelated functions.
+No rollback protocol is in the hardware design. Driver qualification and
+flight update qualification are separate items.
+
+FSW 1.3 launch release, 2014-08:
+Link acceptance completed. Update command identifiers remain allocated.
+No signed in-orbit update demonstration report is present in this archive.
+The last complete linked image is flight.bin. Source exports are partial.
+The maintenance module object was retained only as part of the linked image.
+
+2031 handover:
+Assume neither source completeness nor operational update capability from
+a design note alone. Bench observations characterize the reconstruction,
+not necessarily the hardware currently in orbit. Archive originals remain
+read-only. Preserve your binaries and notes as separate workspace files.

@@ -1,0 +1,23 @@
+LINDEN UNIVERSITY / ARCHIVE CATALOG
+
+operations.txt          Current workstation handover and basic operations
+hardware.txt            Functional board model and register descriptions
+isa.txt                 Complete L32 instruction and assembler specification
+protocol.txt            Link framing and telecommand ICD
+telemetry.txt           Engineering record schema
+incident-log.txt        Historical operator notes, including untested opinions
+update-notes.txt        Boot and software update design/acceptance history
+flight.bin              Complete linked FSW 1.3 image, origin 0000
+flight.sym              Symbol export from that image
+boot-main.asm           FSW 1.3 core source export; external module references
+housekeeping.asm        FSW 1.3 recorder task source export, origin 1000
+maintenance-v12.asm     Earlier maintenance module source (FSW 1.2)
+history.csv             Selected accepted historical engineering values
+bench-example.asm       Standalone assembler/bench exercise, not flight code
+
+The bench loads flight.bin, with nominal memory and devices. The source
+exports are not a complete build tree. In particular, maintenance-v12.asm
+is an earlier revision and should not be assumed byte-identical to 1.3.
+Binaries, symbol maps and source exports can be compared with local tools.
+Historical logs were hand-transcribed from accepted records; they do not
+represent a complete lossless recording of all radio traffic.

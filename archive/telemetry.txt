@@ -1,0 +1,24 @@
+ORIEL-1 / ENGINEERING RECORD FORMAT / 1.3
+
+Response type 90 followed by ten 32-bit little-endian words (40 bytes):
+ 00 signature       314b484f (ASCII OHK1)
+ 04 uptime_ms       Onboard milliseconds since OBC reset
+ 08 bus_mv          Supply millivolts
+ 0c temperature     Centidegrees Celsius
+ 10 reset_count     Supervisor reset counter
+ 14 samples         Completed instrument samples since OBC reset
+ 18 mode            1 = scheduled engineering acquisition
+ 1c firmware        0103 = archived release 1.3
+ 20 photodiode      Unsigned instrument sample
+ 24 integrity       Wrapping unsigned sum of the first nine words
+
+The record checksum is separate from the link-frame CRC. A valid radio
+frame can contain an invalid engineering record. The decoder checks both
+record length and signature/integrity. Sensor ranges, timestamps, freshness,
+and progression still require operator judgment; 'valid' is not a complete
+statement about spacecraft health.
+
+The timer produces a record every 30 seconds. The engineering service
+requests an additional record. Some packets may be lost or sent below the
+horizon. The sample count is reset by an OBC restart. The link beacon clock
+is seconds, whereas engineering record uptime is milliseconds.

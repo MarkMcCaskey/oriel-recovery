@@ -1,0 +1,20 @@
+[package]
+name = "orbital-recovery"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "An offline satellite recovery engineering simulator"
+build = "build.rs"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[[bin]]
+name = "ground"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true
+panic = "abort"

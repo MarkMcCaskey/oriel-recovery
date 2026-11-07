@@ -1,0 +1,24 @@
+ORIEL-1 / EXTRACTS FROM OPERATIONS LOG
+
+2014-09-18  Commissioning: carrier acquired. Engineering frames accepted.
+            Instrument sample sequence increases during successive contacts.
+2015-03-06  Two consecutive command acknowledgements missing near LOS.
+            Following contact recovered nominal link. RF margin suspected.
+2016-02-11  Engineering decoder rejects some records. Link CRCs pass.
+            No ground decoder release change recorded that week.
+2016-02-18  Repeated record rejection from two operators. Identity command
+            still returns the expected release marker. No full dump saved.
+2016-03-02  OBC restart commanded. Carrier returns. Engineering acceptance
+            not restored. Working hypothesis at the time: sensor interface.
+            No supporting bus-level measurements are attached.
+2016-04-20  Ground engineering board reassigned to another student project.
+2017-08-09  Short pass: link beacon received. No scheduled engineering run.
+2020-11-14  Carrier and link beacon logged. Automatic decoder still rejects
+            engineering data. Investigation deferred due to staffing.
+2027-06-30  Historical storage copied to department archive. Several build
+            directories absent. Linked release image and symbol map retained.
+2031-04-07  Recovery workstation commissioned from surviving documentation.
+            No agreed diagnosis. No record of a successful repair.
+
+Operator notes are observations or contemporary hypotheses, not findings.
+Dates above belong to the fictional mission. No real spacecraft is modeled.

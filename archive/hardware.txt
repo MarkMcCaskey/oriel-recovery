@@ -1,0 +1,78 @@
+ORIEL-1 ENGINEERING MODEL / BOARD REFERENCE / revision C
+
+This fictional board uses the L32 teaching core. It is not ARM-compatible.
+The functional model has an effective 20,000 instructions/s, one instruction
+per cycle, and a 1 ms peripheral scheduling quantum. These rates describe
+this simulation; they are not a claim about flight-qualified processors.
+No MMU, cache, virtual memory, DMA coherence, or host system calls exist.
+The L32 instruction specification is in isa.txt.
+
+BUS MAP (byte-addressed, little-endian)
+0000–00ff   Immutable reset/interrupt vector ROM, executable
+0100–7fff   NOR flash; erase in 256-byte sectors, executable
+8000–9fff   SRAM; cleared at every OBC reset, executable
+ a000–bfff  8 KiB parallel nonvolatile recorder memory, executable
+ c000–efff  Unpopulated bus; reads ff, writes ignored
+ f000–f0ff  Memory-mapped peripherals (32-bit aligned accesses)
+ f100–ffff  Unpopulated bus
+
+Unmapped accesses return open-bus ff. Ordinary stores cannot modify flash
+or vector ROM. SRAM/NVRAM writes are byte-addressable. A CPU fault stops
+instruction execution until watchdog reset; there is no software exception
+handler. Instruction fetch outside 0000–bfff or unaligned to 8 bytes faults.
+
+PERIPHERALS (all offsets relative to f000)
+00 R  RX_LEN        Front packet length, zero if empty. FIFO: eight packets.
+04 R  RX_BYTE       Read and advance the front packet cursor (low byte).
+08 W  RX_RELEASE    Remove the front packet, reset its cursor.
+10 W  TX_ADDRESS    Bus address of response data.
+14 W  TX_LENGTH     Data length, clamped to 256.
+1c W  TX_TYPE       Response type (low byte).
+18 W  TX_SUBMIT     Read data through the bus and enqueue type+data.
+                   TX FIFO: 32 packets; a full FIFO drops the new packet.
+20 R  UPTIME_MS     Milliseconds since OBC reset, modulo 2^32.
+24 R  RESET_COUNT   Supervisor counter; survives OBC resets.
+28 R  RESET_CAUSE   0 power-on, 1 watchdog, 2 software request.
+2c W  WATCHDOG      Write 000051ac to refresh the five-second timer.
+30 R  FLASH_STATUS  Bit 0 busy; bit 1 command/program error; bit 2 worn sector.
+30 W  FLASH_COMMAND 1 erase sector containing FLASH_ADDRESS, 2 program word.
+34 W  FLASH_ADDRESS Word-aligned target address.
+38 W  FLASH_DATA    Four bytes to program (little-endian).
+3c W  FLASH_KEY     c0de authorizes ONE flash command; consumed on command.
+40 W  RESET         Write 1 to request OBC reset.
+50 R  BUS_MV        Sampled supply sensor, millivolts.
+54 R  TEMP_CENTI_C  Temperature sensor, centidegrees Celsius.
+58 R  PHOTODIODE    Unsigned optical sensor reading.
+
+FLASH
+Erase takes 30 ms and sets a 256-byte sector to ff. Word program takes 2 ms
+and only changes 1 bits to 0. Requesting a 0-to-1 change sets error; stored
+bits still follow bitwise AND. Re-key before every command. Invalid,
+unaligned, protected, or busy requests set error. Read status and wait for
+completion. Registers can be changed during an operation; the operation
+uses the values captured when it began. Each completed erase increments
+sector wear; beyond 10,000 erases, erase fails with a wear error.
+
+The CPU can read flash during programming; instruction fetch sees the
+current stored bytes. A reset interrupting erase leaves the first half of
+the sector erased. A reset interrupting program applies the first two
+bytes. There is no implicit rollback or backup flash bank. A damaged boot
+application may be unrecoverable through the radio. ROM only transfers
+control to the application; it does not provide a radio rescue monitor.
+
+INTERRUPTS AND RESET
+A 1 Hz timer asserts a coalescing pending interrupt. With interrupts enabled
+and no active handler, the CPU saves registers/PC/Z/C to a hardware shadow
+bank, clears working registers, sets r7=9ef0 and enters address 0008.
+IRET restores the shadow bank. Nesting is disabled. Normal reset enters
+0000 with r7=9ff0 and IRQ disabled. WAIT sleeps until a timer event or radio
+input; sleep alone does not feed the watchdog. Supervisor, recorder and
+flash persist through OBC resets. SRAM, CPU, RX FIFO and flash key reset.
+The independent radio's queued TX packets may survive an OBC reset.
+
+ALLOCATIONS (FSW 1.3 linker notes)
+8000  timer divider (word)        8004 sample counter (word)
+8200  command receive buffer     8500–87ff reserved working storage
+8800–8fff experiment workspace   9e00–9eff interrupt stack
+9f00–9fff foreground stack       a800 recorder staging area
+Exact code addresses are in flight.sym. Consult binaries for linked code.

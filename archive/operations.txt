@@ -1,0 +1,68 @@
+LINDEN UNIVERSITY · SPACE SYSTEMS LABORATORY
+ORIEL-1 / Ground operations handover / 2031-04-07
+
+MISSION
+A 1U university spacecraft launched in 2014. Engineering records stopped
+passing acceptance checks in 2016. Later short contacts reported a carrier,
+link beacons, and some command replies. No in-orbit recovery is recorded.
+The engineering team no longer exists as an organized group.
+
+Your workstation contains the surviving archive and a reconstructed local
+bench. Establish what still works, make a diagnosis you can defend, and
+attempt to restore useful engineering data and sustained operation.
+
+STATION BASICS
+'files' lists the archive and your workspace. 'cat' reads text. Addresses
+accept decimal or 0x-prefixed hexadecimal. Raw bytes use plain hex pairs.
+'help' lists the tools. 'track' and 'passes' report predicted geometry.
+'next' advances to the next acquisition of signal plus five seconds.
+If already in contact, 'next' deliberately goes to the following pass.
+'wait 10' advances both spacecraft and station by ten simulated seconds.
+The clock never follows wall time. Reading files consumes no contact time.
+
+Commands enter a station transmit queue. They are not delivered by typing
+them. Advance time, inspect 'rx' and 'log', and account for acknowledgements.
+The line 'SENT' means transmission finished, not that the receiver accepted it.
+Software replies have their own sequence numbers, unrelated to uplink IDs.
+
+Frames are indivisible at the receiver. Loss of signal may interrupt the
+current frame; completed earlier frames remain delivered. Unsent frames
+stay in the station queue for the next pass. 'cancel' clears only unsent
+frames. There are no automatic retries. Retry carefully: commands may have
+executed even if their acknowledgement was lost. Repeating a RAM write of
+the same bytes is idempotent; repeating a service need not be.
+
+The spacecraft continues executing and transmitting below the horizon.
+You will not see those transmissions. Independent link beacons are not
+proof of a functioning flight application. Radio buffers have finite depth.
+
+WORKSPACE
+Browser: open the Workbench tab to edit assembly or import/export files.
+CLI: 'import path [workspace-name]' and 'export name path' move local files.
+Paths containing spaces can be handled by placing files in a simpler path.
+'asm source.asm BASE output.bin' produces a binary and a symbol listing.
+'upload file.bin ADDRESS' queues chunks, but does not advance the clock.
+The upload tool uses the documented RAM-load command; it cannot bypass its
+flight software restrictions. All file addresses and lengths are checked.
+
+'lab help' describes the independent bench. It starts from flight.bin,
+with nominal devices. You can load images, step instructions, set a PC or
+breakpoint, inspect memory, and introduce your own hardware hypotheses.
+That bench is a reconstruction, not a live debugger attached to ORIEL-1.
+
+RECORD KEEPING
+The CLI saves to .local/station.session after each command. Browser sessions
+are stored locally in this browser. Export a session to transfer between
+CLI and browser. A running transmission, memory contents, clock, files,
+radio noise state and local bench are preserved. Ground traffic history is
+bounded to the most recent 4096 records; export your notes independently.
+
+Normal mode: 'snapshot NAME' saves one of eight investigation checkpoints;
+'restore NAME' returns to it. 'new' starts a new investigation.
+Hardcore mode disables checkpoints, restore, and restart commands. Normal
+persistence still works. This is an honor-system constraint on your local
+machine, not anti-cheat software. Keep a separate session path per campaign.
+
+Success must be judged from engineering evidence, including fresh data,
+plausible measurements, continuing sample production, and behavior across
+loss of contact and reset. There is no hidden score or victory password.

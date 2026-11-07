@@ -1,0 +1,35 @@
+name: Build and verify players
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.93.0 --profile minimal
+      - run: rustup override set 1.93.0
+      - run: cargo test --offline
+      - run: ./scripts/build-player.sh
+      - run: python3 scripts/audit.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.os }}
+          path: dist/player/
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.93.0 --profile minimal --target wasm32-unknown-unknown
+      - run: rustup override set 1.93.0
+      - run: ./scripts/build-web.sh
+      - run: node scripts/test-web.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: static-browser-player
+          path: dist/

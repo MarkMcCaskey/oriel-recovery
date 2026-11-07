@@ -1,0 +1,73 @@
+L32 / INSTRUCTION REFERENCE / v1
+
+Eight 32-bit general registers r0..r7. r7 is also the descending stack
+pointer. Arithmetic wraps modulo 2^32. Little-endian, byte-addressed bus.
+Instructions are always eight bytes:
+  opcode:u8, a:u8, b:u8, c:u8, immediate:u32_le
+Unused register fields must be 0..7 (the assembler emits zero). Unknown
+opcodes, invalid register fields, bad fetch alignment/range, or IRET without
+an active IRQ trap. Loads and stores allow unaligned memory accesses;
+32-bit MMIO accesses must be aligned. PC advances by 8 before execution.
+
+OP  ASSEMBLY                  EFFECT
+00  nop                       No operation
+01  movi ra, IMM              ra = IMM
+02  mov ra, rb                ra = rb
+03  add ra, rb, rc            ra = rb + rc; C = unsigned carry
+04  addi ra, rb, IMM          ra = rb + IMM; flags unchanged
+05  sub ra, rb, rc            ra = rb - rc; C = no borrow
+06  and ra, rb, rc            Bitwise AND
+07  or ra, rb, rc             Bitwise OR
+08  xor ra, rb, rc            Bitwise XOR
+09  shl ra, rb, IMM           Shift left by IMM & 31
+0a  shr ra, rb, IMM           Logical shift right by IMM & 31
+0b  ldb ra, rb, OFFSET        Zero-extended byte at rb + OFFSET
+0c  ld ra, rb, OFFSET         Word at rb + OFFSET
+0d  stb ra, rb, OFFSET        Store low byte of ra
+0e  st ra, rb, OFFSET         Store word ra
+0f  cmp ra, rb                Z = (ra == rb), C = (ra >= rb), unsigned
+10  cmpi ra, IMM              Compare register with immediate
+11  jmp TARGET               Absolute jump
+12  jz TARGET                Jump if Z
+13  jnz TARGET               Jump if !Z
+14  jlo TARGET               Jump if !C
+15  jhs TARGET               Jump if C
+16  call TARGET              Push return PC, jump
+17  ret                      Pop PC
+18  callr ra                 Push return PC, jump to ra
+19  push ra                  r7 -= 4; store ra at r7
+1a  pop ra                   v = word[r7]; r7 += 4; ra = v
+1b  wait                     Sleep until peripheral event
+1c  ei                       Enable timer interrupts
+1d  di                       Disable timer interrupts
+1e  iret                     Restore hardware shadow context
+1f  halt                     Stop CPU until reset (watchdog remains active)
+20  jmpr ra                  Jump to register
+21  mul ra, rb, rc            Low 32 bits of product
+
+Only CMP/CMPI set Z; only ADD/SUB/CMP/CMPI set C. No other instruction
+changes flags. Branches use absolute byte addresses, not instruction
+indices. The default foreground and interrupt stacks are separate. There
+is no stack bounds checking in hardware; stores still obey bus mapping.
+
+ASSEMBLER
+'asm FILE BASE OUTPUT' assembles at BASE and emits a raw binary plus symbols.
+Labels end with ':'. Semicolon begins a comment. Commas are optional.
+Numbers: decimal, 0x-prefixed hex, or negative (two's complement).
+Symbols may be labels or '.equ NAME VALUE'. No expressions/macros/includes.
+Labels can be forward references in instructions or data. .equ and .org
+must use numbers or symbols already defined in the first pass.
+.org ADDRESS       Absolute position; gaps fill ff. Must not go below BASE.
+.word VALUE ...    Emit little-endian words.
+.byte VALUE ...    Emit low bytes.
+.space COUNT       Reserve bytes filled ff.
+Instruction addresses must align to eight bytes. Data need not be aligned.
+There is no C/Rust cross-compiler for L32; use the included assembler.
+Disassembly treats every eight bytes as an instruction and cannot infer
+code versus data. Symbols are provided separately.
+
+LOCAL BENCH
+'lab step N' steps instructions with peripheral time frozen (debug halt).
+'lab run MS' resumes device time and CPU execution. A PC breakpoint stops
+before the selected instruction. 'lab pc ADDR' clears sleep/trap but does
+not reset memory or registers. 'lab reset' reconstructs the nominal bench.
